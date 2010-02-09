@@ -6,11 +6,11 @@
     version="2.5">
   <display-name>gomitoban</display-name>
   <servlet>
-    <servlet-name>gb</servlet-name>
+    <servlet-name>gs</servlet-name>
     <servlet-class>gomitoban.servlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>gb</servlet-name>
+    <servlet-name>gs</servlet-name>
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
 </web-app>
