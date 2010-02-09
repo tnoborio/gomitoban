@@ -2,7 +2,7 @@
 
   <property environment="env" />	
   <property name="sdk.dir" location="/Users/tnoborio/lib/appengine-java-sdk-1.3.0" />
-  <property name="appengine-api.jar" location="${sdk.dir}/lib/user/appengine-api-1.3.0.jar" />
+  <property name="appengine-api.jar" location="${sdk.dir}/lib/user/appengine-api-1.0-sdk-1.3.0.jar" />
   
   <property name="compojure.dir" value="/Users/tnoborio/src/clojure/compojure" />
   <property name="appengine-clj.jar" value="/Users/tnoborio/src/clojure/appengine-clj.jar" />
