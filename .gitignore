@@ -1,3 +1,5 @@
 *~
 .clojure
 datastore-indexes-auto.xml
+classes
+war/WEB-INF/lib
