@@ -9,7 +9,9 @@
    (twitter4j Twitter)
    (twitter4j Paging)))
 
-(def tw (Twitter. "gomitobanbot" "mDW4sdEU"))
+(defn setup-tw
+  [username password]
+  (def tw (Twitter. username password)))
 
 (defn match? [re str]
   (re-matches re str))
@@ -32,9 +34,6 @@
 	   (keyword (nth % 1))
 	   nil)
 	(seq-with-idx week-matches)))
-; (week-key "ようび")
-; (week-key "日ようび")
-; (week-key "月")
 
 (defn trim [str]
   (if (= (class str) String)
@@ -74,13 +73,14 @@
   (seq (difference (set fllws) (set frnds))))
 
 (defn follow! [ids]
-  (map #(.createFriendship tw %) ids))
+  (dorun (map #(.createFriendship tw %) ids)))
 
 (defn unfollow! [ids]
   (doall (map #(.createFriendship tw %) ids)))
     
 (defn mentions-with-userid []
-  (map #(vector (.getId %) (.getText %) (.. % getUser getId)) (seq (.getMentions tw (Paging. 1 100)))))
+  (map #(vector (.getId %) (.getText %)
+		(.. % getUser getId)) (seq (.getMentions tw (Paging. 1 100)))))
 
 (defn update [status]
   (.updateStatus tw status))

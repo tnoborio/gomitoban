@@ -7,24 +7,25 @@
     (com.google.appengine.api.datastore Query))
   (:require [appengine-clj.datastore :as ds]))
 
+(defn load-config []
+  (read-string (slurp "config.clj")))
+
+(defn setup []
+  (let [conf (load-config)]
+    (setup-tw (:username conf) (:password conf))))
+
 (defn create [content author]
   (ds/create {:kind "Greeting" :author author :content content :date (java.util.Date.)}))
 
 (defroutes bomitoban-app
-  (GET "/a"
-       (html (parse-content "火=燃えるゴミ、金曜日= 燃えないゴミ, 水曜日＝ペットボトル  ")))
-  (GET "/"
-       (html [:h1 "Hello, World!"]))
-  (GET "/test"
-       (let [user-service (UserServiceFactory/getUserService)
-	     user (.getCurrentUser user-service)]
-	 (html
-	  [:h1 "Hello, " (if user (.getNickname user) "World") "!"]
-	  [:p (link-to (.createLoginURL user-service "/") "sign in")]
-	  [:p (link-to (.createLogoutURL user-service "/") "sign out")])))
-  (GET "/create"
-       (html (create "programming clojure" "tnoborio")))
-  (GET "/find"
-       (html (find-all))))       
+  (GET "/cron/tweet"
+       (html (update "test")))
+  (GET "/cron/follow"
+       (setup)
+       (let [fllws (followers)
+	     frnds (friends)
+	     uf (unfollowers fllws frnds)]
+	 (follow! uf)
+	 (html "ok"))))
 
 (defservice bomitoban-app)
