@@ -3,4 +3,13 @@ Clojure twitter bot usging Google App Engine
 Tokusei Noborio
 (t dot noborio at gmail dot com)
 
+--------------------
+Using the bot
 
+Place a file in war/config.clj with the format:
+
+      {:username "username",
+       :password "password"}
+
+
+  
