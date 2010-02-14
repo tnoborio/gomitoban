@@ -4,3 +4,4 @@ datastore-indexes-auto.xml
 classes
 war/WEB-INF/lib
 war/config.clj
+appengine-generated
