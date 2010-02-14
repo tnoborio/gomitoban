@@ -13,10 +13,10 @@
   [username password]
   (def tw (Twitter. username password)))
 
-(defn match? [re str]
+(defn- match? [re str]
   (re-matches re str))
 
-(defn seq-with-idx [seq]
+(defn- seq-with-idx [seq]
   (map list seq
        (map #(keyword (str %)) (range (count seq)))))
 ; (seq-with-idx '(a b c))
@@ -35,18 +35,18 @@
 	   nil)
 	(seq-with-idx week-matches)))
 
-(defn trim [str]
+(defn- trim [str]
   (if (= (class str) String)
     (.trim str)
     ""))
 
-(defn split [field]
+(defn- split [field]
   (let [[k v] (re-split #"=|＝" field)]
     (list (week-key (trim k)) (trim v))))
 ; (split "月曜=ほげ")
 ; (split "火=燃えるゴミ")
 
-(defn to-week-map [body]
+(defn- to-week-map [body]
   (reduce #(assoc %1 (first %2) (nth %2 1)) {}
 	  (map split (re-seq #"[^,、]+" body))))
 ; (to-week-map "火=燃えるゴミ、金曜日= 燃えないゴミ, 水曜日＝ペットボトル  ")
@@ -78,9 +78,9 @@
 (defn unfollow! [ids]
   (doall (map #(.createFriendship tw %) ids)))
     
-(defn mentions-with-userid []
-  (map #(vector (.getId %) (.getText %)
-		(.. % getUser getId)) (seq (.getMentions tw (Paging. 1 100)))))
+(defn mentions []
+  (map #(hash-map :id (.getId %) :text (.getText %) :user_id (.. % getUser getId))
+       (seq (.getMentions tw ))))
 
 (defn update [status]
   (.updateStatus tw status))
