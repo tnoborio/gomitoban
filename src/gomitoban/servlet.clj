@@ -7,15 +7,9 @@
     (com.google.appengine.api.datastore Query))
   (:require [appengine-clj.datastore :as ds]))
 
-(defn load-config []
-  (read-string (slurp "config.clj")))
-
-(defn setup []
-  (let [conf (load-config)]
-    (setup-tw (:username conf) (:password conf))))
-
 (defroutes bomitoban-app
   (GET "/cron/tweet"
+       (setup)
        (html (update "test")))
   (GET "/cron/follow"
        (setup)
@@ -26,6 +20,6 @@
 	 (html "ok")))
   (GET "/cron/mentions"
        (setup)
-       (html (mentions))))
+       (html (parse-mentions (mentions)))))
 
 (defservice bomitoban-app)

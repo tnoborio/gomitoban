@@ -13,6 +13,14 @@
   [username password]
   (def tw (Twitter. username password)))
 
+(defn- load-config
+  ([] (load-config "config.clj"))
+  ([conf-file] (read-string (slurp conf-file))))
+
+(defn setup [& file]
+  (let [conf (apply load-config file)]
+    (setup-tw (:username conf) (:password conf))))
+
 (defn- match? [re str]
   (re-matches re str))
 
@@ -50,18 +58,24 @@
   (reduce #(assoc %1 (first %2) (nth %2 1)) {}
 	  (map split (re-seq #"[^,、]+" body))))
 ; (to-week-map "火=燃えるゴミ、金曜日= 燃えないゴミ, 水曜日＝ペットボトル  ")
+; (to-week-map "@gomitobanbot ほげほげてすと。")
 
 (defn parse-content [content]
   (let [week-map (to-week-map content)]
     (map #(% week-map) (map #(keyword (str %)) (range 7)))))
 ; (parse-content "火=燃えるゴミ、金曜日= 燃えないゴミ, 水曜日＝ペットボトル  ")
+; (parse-content "@gomitobanbot ほげほげてすと。")
 
 (defn create-schedule [userid content]
   (ds/create {:kind "Schedule" :userid userid
 	      :content (str-join "\t" (parse-content content)) :date (java.util.Date.)}))
 
+(defn parse-mentions [mentions]
+  (for [{text :text userid :userid} mentions]
+    (create-schedule userid text)))
+
 (defn find-all []
-  (ds/find-all (doto (Query. "Greeting") (.addSort "date"))))
+  (ds/find-all (doto (Query. "Schedule") (.addSort "date"))))
 
 (defn followers []
   (seq (.. tw getFollowersIDs getIDs)))
@@ -79,17 +93,8 @@
   (doall (map #(.createFriendship tw %) ids)))
     
 (defn mentions []
-  (map #(hash-map :id (.getId %) :text (.getText %) :user_id (.. % getUser getId))
-       (seq (.getMentions tw ))))
+  (map #(hash-map :id (.getId %) :text (.getText %) :userid (.. % getUser getId))
+       (seq (.getMentions tw))))
 
 (defn update [status]
   (.updateStatus tw status))
-
-(defn main []
-  (let [fllws (followers)
-	frnds (friends)
-	uf (unfollowers fllws frnds)]
-    (println "un followers: " uf)
-    (println "friends: " frnds)
-    (follow! uf)))
-

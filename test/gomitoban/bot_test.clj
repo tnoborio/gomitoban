@@ -22,3 +22,7 @@
     (is (= 1234 (:userid my-schedule)))
     (is (= "\t\t燃えるゴミ\tペットボトル\t\t燃えないゴミ\t" (:content my-schedule)))))
 	  
+(dstest can-parse-mentions
+  (bot/setup "../war/config.clj")
+  (println (bot/parse-mentions (bot/mentions))))
+
