@@ -92,9 +92,27 @@
 (defn unfollow! [ids]
   (doall (map #(.createFriendship tw %) ids)))
     
-(defn mentions []
-  (map #(hash-map :id (.getId %) :text (.getText %) :userid (.. % getUser getId))
-       (seq (.getMentions tw))))
+(defn mentions
+  ([] (mentions 1))
+  ([page] (lazy-seq (cons (.getMentions tw (Paging. page))
+			  (do
+			    (println page)
+			    (mentions (inc page)))))))
+
+(defn status-hash [status]
+  (hash-map :id (.getId status) :text (.getText status)
+	    :userid (.. status getUser getId)))
+
+(defn mention-statuses []
+  (for [mention (mentions)]
+    (map status-hash mention)))
+
+
+(defn x []
+  (let [a '((1 2 3) (4 5 6))]
+    (for [m a]
+      (map inc m))))
+
 
 (defn update [status]
   (.updateStatus tw status))
